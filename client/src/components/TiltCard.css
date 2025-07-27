@@ -1,0 +1,85 @@
+.tilt-card {
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 200ms ease-out;
+  cursor: pointer;
+  background: white;
+  width: 100%;
+  max-width: 320px;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.tilt-card-image-container {
+  overflow: hidden;
+  height: 200px;
+}
+
+.tilt-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 400ms ease;
+}
+
+.tilt-card:hover .tilt-card-image {
+  transform: scale(1.05);
+}
+
+.tilt-card-content {
+  padding: 16px;
+}
+
+.tilt-card-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a202c;
+}
+
+.tilt-card-type,
+.tilt-card-bed,
+.tilt-card-price {
+  margin: 8px 0;
+  font-size: 0.95rem;
+  color: #4a5568;
+}
+
+.tilt-card-status {
+  font-weight: bold;
+  margin: 12px 0;
+}
+
+.tilt-card-status.available {
+  color: #27ae60;
+}
+
+.tilt-card-status.booked {
+  color: #e74c3c;
+}
+
+.tilt-card-button {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 8px;
+}
+
+.tilt-card-button:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tilt-card-button.disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+  opacity: 0.7;
+}

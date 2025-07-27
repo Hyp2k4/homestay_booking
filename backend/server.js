@@ -4,7 +4,24 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const app = express();
-app.use(cors());
+app.use((req, res, next) => {
+  const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000'];
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', true);
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
+app.use(express.json());
 app.use(bodyParser.json());
 
 // Kết nối database
@@ -25,13 +42,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something broke!' });
 });
 
-// CORS configuration (nếu cần chi tiết hơn)
-app.use(cors({
-  origin: 'http://localhost:3000', // Địa chỉ React app
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
 app.get('/api/rooms/:id', (req, res) => {
   const roomId = req.params.id;
   db.query('SELECT * FROM rooms WHERE room_id = ?', [roomId], (err, results) => {
@@ -40,6 +50,33 @@ app.get('/api/rooms/:id', (req, res) => {
       return res.status(404).json({ message: 'Room not found' });
     }
     res.json(results[0]);
+  });
+});
+
+// Lấy tất cả phòng
+app.get('/api/rooms', (req, res) => {
+  const query = `
+    SELECT r.*, 
+      GROUP_CONCAT(s.service_name SEPARATOR ', ') AS services
+    FROM rooms r
+    LEFT JOIN room_services rs ON r.room_id = rs.room_id
+    LEFT JOIN services s ON rs.service_id = s.service_id
+    GROUP BY r.room_id
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    // Chuyển đổi kết quả services từ string sang array
+    const formattedResults = results.map(room => ({
+      ...room,
+      services: room.services ? room.services.split(', ') : []
+    }));
+
+    res.json(formattedResults);
   });
 });
 

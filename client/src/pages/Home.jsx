@@ -4,7 +4,7 @@ import Hero from '../components/Hero'
 const Home = () => {
   return (
     <>
-        <Hero/>
+        <Hero imageUrl='/src/assets/heroImage.png' />
     </>
   )
 }
