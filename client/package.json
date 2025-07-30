@@ -11,12 +11,18 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.37.0",
+    "@fortawesome/fontawesome-svg-core": "^7.0.0",
+    "@fortawesome/free-solid-svg-icons": "^7.0.0",
+    "@fortawesome/react-fontawesome": "^0.2.3",
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.11.0",
+    "express-session": "^1.18.2",
+    "framer-motion": "^12.23.12",
     "prop-types": "^15.8.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.7.1",
+    "swiper": "^11.2.10",
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {

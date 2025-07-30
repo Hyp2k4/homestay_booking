@@ -28,8 +28,8 @@ export default function Pagination({ totalPages = 5, onPageChange }) {
                     key={i}
                     onClick={() => handlePageClick(i)}
                     className={`h-10 w-10 flex items-center justify-center aspect-square ${currentPage === i
-                            ? 'text-indigo-500 border border-indigo-200 rounded-full'
-                            : ''
+                        ? 'text-indigo-500 border border-indigo-200 rounded-full'
+                        : ''
                         }`}
                 >
                     {i}
