@@ -3,62 +3,65 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import formatCurrency from '../../utils/formatCurrency';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const RoomDetails = () => {
     const { roomId } = useParams();
     const [room, setRoom] = useState('');
+    const [bookingDates, setBookingDates] = useState({
+        checkIn: "",
+        checkOut: ""
+    }); const [guestCount, setGuestCount] = useState({ adults: 1, children: '' });
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [mainImage, setMainImage] = useState('');
     const [hoveredImage, setHoveredImage] = useState(null); // Hover image state
+    const navigate = useNavigate();
+    const [isBooking, setIsBooking] = useState(false);
+    const [bookingError, setBookingError] = useState(null);
 
-    useEffect(() => {
-        const fetchRoomDetails = async () => {
-            try {
-                setLoading(true);
-                setError(null);
+    const handleBookNow = async () => {
+        if (!user) {
+            navigate('/login', { state: { from: `/rooms/${room.id}` } });
+            return;
+        }
 
-                // Fetch room info
-                const response = await axios.get(`http://localhost:5000/api/rooms/${roomId}`);
-                const roomData = response.data.data;
-                // Fetch preview images
-                const imgRes = await axios.get(`http://localhost:5000/api/room-images/${roomId}`);
-                let previewImages = [];
+        try {
+            setLoading(true);
 
-                if (imgRes.data.success && Array.isArray(imgRes.data.data)) {
-                    previewImages = imgRes.data.data.flatMap((item) => {
-                        try {
-                            // Nếu item là chuỗi JSON mảng
-                            const parsed = JSON.parse(item);
-                            if (Array.isArray(parsed)) return parsed;
-                        } catch (_) {
-                            // Nếu không phải JSON, return item
-                        }
-                        return [item];
-                    });
-                } console.log('Preview images:', previewImages);
-                setRoom({
-                    ...roomData,
-                    previewImages: previewImages.length > 0
-                        ? previewImages
-                        : [
-                            'https://via.placeholder.com/400x300?text=Preview+1',
-                            'https://via.placeholder.com/400x300?text=Preview+2',
-                            'https://via.placeholder.com/400x300?text=Preview+3',
-                        ]
+            // Gọi API tạo booking mới (đúng endpoint)
+            const response = await axios.post('http://localhost:5000/api/bookings', {
+                room_id: room.id,
+                user_id: user.user_id,
+                check_in_date: bookingDates.checkIn,
+                check_out_date: bookingDates.checkOut,
+                adults: guestCount.adults,
+                children: guestCount.children || 0
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+
+            if (response.data.success) {
+                // Chuyển hướng đến trang my-bookings sau khi đặt thành công
+                navigate('/my-bookings', {
+                    state: {
+                        bookingSuccess: true,
+                        booking: response.data.booking
+                    }
                 });
-
-                setMainImage(roomData.MainImage || 'https://via.placeholder.com/800x500?text=No+Room+Image');
-            } catch (err) {
-                console.error('Error fetching room:', err);
-                setError(err.response?.data?.message || err.message || 'Failed to fetch room details');
-            } finally {
-                setLoading(false);
             }
-        };
+        } catch (error) {
+            console.error('Booking error:', error);
+            setError(error.response?.data?.message || 'Failed to book room');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        fetchRoomDetails();
-    }, [roomId]);
 
 
     if (loading) return <div className="p-10 text-center">Loading room details...</div>;
@@ -148,16 +151,13 @@ const RoomDetails = () => {
                     <div className="space-y-4">
                         <div className="flex justify-between items-center">
                             <span className="text-gray-600">Price per night:</span>
-                            <span className="text-lg font-bold text-blue-600">
+                            <span className="text-xl text-gray-800">
                                 {formatCurrency(room.PricePerNight)}VND /night
                             </span>
                         </div>
 
-                        <div className="pt-4 border-t">
-                            <button
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
-                                onClick={() => alert(`Proceeding to book room ${room.RoomName}`)}
-                            >
+                        <div className="pt-4 border-t hover">
+                            <button onClick={handleBookNow} className="px-4 py-2 text-sm font-medium border border-gray-300 rounded hover:bg-gray-50 transition-all cursor-pointer hover:bg-gray-100">
                                 Book Now
                             </button>
                         </div>

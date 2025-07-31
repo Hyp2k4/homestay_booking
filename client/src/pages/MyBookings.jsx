@@ -3,6 +3,45 @@ import Title from '../components/Title';
 import { assets } from '../assets/assets';
 
 const MyBookings = () => {
+    const booking = [
+        {
+            BookingID: 1,
+            rooms: {
+                main_image: ['https://picsum.photos/300/200'],
+                room_number: 'A101',
+            },
+            room: {
+                roomType: 'Deluxe',
+            },
+            hotel: {
+                address: '123 Nguyen Trai, Hanoi',
+            },
+            guests: 2,
+            total_price: 1200000,
+            check_in: '2025-08-05T12:00:00Z',
+            check_out: '2025-08-07T12:00:00Z',
+            payment_status: 'paid',
+        },
+        {
+            BookingID: 2,
+            rooms: {
+                main_image: ['https://picsum.photos/300/201'],
+                room_number: 'B202',
+            },
+            room: {
+                roomType: 'Standard',
+            },
+            hotel: {
+                address: '456 Le Loi, Hue',
+            },
+            guests: 1,
+            total_price: 750000,
+            check_in: '2025-08-10T12:00:00Z',
+            check_out: '2025-08-12T12:00:00Z',
+            payment_status: 'unpaid',
+        }
+    ];
+
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -45,8 +84,8 @@ const MyBookings = () => {
                     <div className='w-1/3'>Payment</div>
                 </div>
 
-                {bookings.map((booking) => (
-                    <div key={booking.booking_id} className='grid grid-cols-1 md:grid-cols-[3fr_2fr_1fr] w-full border-b border-gray-300 py-6 first:border-t'>
+                {booking.map((booking) => (
+                    <div key={booking.BookingID} className='grid grid-cols-1 md:grid-cols-[3fr_2fr_1fr] w-full border-b border-gray-300 py-6 first:border-t'>
                         <div className='flex flex-col md:flex-row'>
                             <img
                                 src={booking.rooms?.main_image[0] || 'https://via.placeholder.com/150'}

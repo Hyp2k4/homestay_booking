@@ -1,113 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import Hero from '../components/Hero';
-import Pagination from '../components/Pagination';
-import Title from '../components/Title';
-import { assets } from '../assets/assets';
-import formatCurrency from '../../utils/formatCurrency';
-
+import React from 'react'
+import { roomsDummyData } from '../assets/assets'
+import { useNavigate } from 'react-router-dom'
+import StarRating from '../components/StarRating';
 const AllRooms = () => {
-    const [rooms, setRooms] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [roomsPerPage] = useState(8);
-
-    useEffect(() => {
-        const fetchRooms = async () => {
-            try {
-                const res = await fetch('http://localhost:5000/api/rooms');
-                const result = await res.json();
-                console.log('rooms data:', result);
-                setRooms(result.data || []); // ✅ Lấy đúng mảng từ kết quả trả về
-                setLoading(false);
-            } catch (err) {
-                console.error('Failed to fetch rooms:', err);
-                setError(err);
-                setLoading(false);
-            }
-        };
-
-        fetchRooms();
-    }, []);
-
-    const indexOfLastRoom = currentPage * roomsPerPage;
-    const indexOfFirstRoom = indexOfLastRoom - roomsPerPage;
-    const currentRooms = rooms.slice(indexOfFirstRoom, indexOfLastRoom);
-
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
+    const navigate = useNavigate();
     return (
-        <>
-            <Hero imageUrl="https://images.pexels.com/photos/2162220/pexels-photo-2162220.jpeg" showSearchForm={false} />
-            <div className="rooms-page max-w-screen-xl mx-auto px-4 py-10">
-                <Title title="All Rooms" />
-
-                {loading ? (
-                    <p className="text-center mt-20">Loading rooms...</p>
-                ) : error ? (
-                    <p className="text-center mt-20 text-red-500">Failed to load rooms.</p>
-                ) : (
-                    <>
-                        <div className="flex flex-wrap items-center justify-center gap-6 mt-20">
-                            {currentRooms.map((room) => (
-                                <Link
-                                    to={`/rooms/${room.id}`} // ⚠️ room.id thay vì RoomID
-                                    onClick={() => scrollTo(0, 0)}
-                                    key={room.id}
-                                    className="relative w-full max-w-70 bg-white rounded-xl overflow-hidden text-gray-500/90 shadow-[0px_4px_4px_rgba(0,0,0,0.05)] hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                                >
-                                    {room.mainImage ? (
-                                        <img
-                                            src={room.mainImage}
-                                            alt={`Room ${room.name}`}
-                                            className="h-[200px] w-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="h-[200px] w-full bg-gray-200 animate-pulse" />
-                                    )}
-
-                                    <div className="p-4 pt-5">
-                                        <div className="flex items-center justify-between">
-                                            <p className="font-playfair text-xl font-medium text-gray-800">
-                                                Room {room.number}
-                                            </p>
-                                            <div className="flex items-center gap-1">
-                                                <img src={assets.starIconFilled} alt="star-icon" className="w-4 h-4" />
-                                                <span>4.5</span>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-1 text-sm mt-1">
-                                            <img src={assets.locationIcon} alt="location-icon" className="w-4 h-4" />
-                                            <span>{room.address || 'N/A'}</span>
-                                        </div>
-                                        <div className="flex items-center justify-between mt-4">
-                                            <p>
-                                                <span className="text-xl text-gray-800">
-                                                    {formatCurrency(room.price)}
-                                                </span>{' '}
-                                                VND /night
-                                            </p>
-                                            <button className="px-4 py-2 text-sm font-medium border border-gray-300 rounded hover:bg-gray-50 transition-all">
-                                                Book Now
-                                            </button>
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))}
+        <div className='flex flex-col-reverse lg:flex-row items-start justify-between pt-28 md:pt-35 px-4 md:px-16 lg:px-24 xl:px-32'>
+            <div>
+                <div className='flex flex-col items-start text-left'>
+                    <h1 className='font-playfair text-4xl md:text-[40px]'>Homestay Rooms</h1>
+                    <p className='text-sm md:text-base text-gray-500/90 mt-2 max-w-174'>Take advantage of out limited-time offers and special packages to enhance your stay and create unforgettable memories.</p>
+                </div>
+                {roomsDummyData.map((room) => (
+                    <div>
+                        <img onClick={() => navigate(`/rooms/${room._id}`)} src={room.images[0]} alt="homestay-img" title='View Room Details' className='max-h-65 md:w-1/2 rounded-xl shadow-lg object-cover cursor-pointer' />
+                        <div className='md:1/2 flex flex-col gap-2'>
+                            <p>{room.hotel.city}</p>
+                            <p>{room.hotel.name}</p>
+                            <div className='flex items-center'>
+                                <StarRating />
+                                <p className='ml-2'>200+ Reviews</p>
+                            </div>
                         </div>
-
-                        <div className="mt-10 flex justify-center">
-                            <Pagination
-                                totalPages={Math.ceil(rooms.length / roomsPerPage)}
-                                onPageChange={paginate}
-                            />
-                        </div>
-                    </>
-                )}
+                    </div>
+                ))}
             </div>
-        </>
-    );
-};
 
-export default AllRooms;
+        </div>
+    )
+}
+
+export default AllRooms

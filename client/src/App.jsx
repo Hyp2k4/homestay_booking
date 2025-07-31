@@ -8,11 +8,13 @@ import Footer from './components/Footer'
 import MyBookings from './pages/MyBookings'
 import Post from './pages/Post'
 import MPost from './pages/MPost'
+import HomestayReg from './components/HomestayReg'
 const App = () => {
   const isOwnerPath = useLocation().pathname.includes("owner");
   return (
     <div>
       {!isOwnerPath && <Navbar />}
+      {/* <HomestayReg></HomestayReg> */}
       <div className='min-h-[70vh]'>
         <Routes>
           <Route path='/' element={<Home />} />
@@ -21,7 +23,7 @@ const App = () => {
           <Route path='/my-bookings' element={<MyBookings />} />
           <Route path='/post' element={<Post />} />
           <Route path='/mpost' element={<MPost />} />
-          
+
 
         </Routes>
       </div>

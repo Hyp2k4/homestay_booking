@@ -271,28 +271,65 @@ app.get('/api/top-rated-rooms', async (req, res) => {
 
 
 // API Login
-app.post('/api/login', async (req, res) => {
-  const { username, password } = req.body;
-  const user = await getUserFromDB(username, password); // kiểm tra DB
+app.post('/api/sync-user', async (req, res) => {
+  const {
+    userID,
+    username,
+    password,
+    email,
+    fullName,
+    phoneNumber,
+    address,
+    dateOfBirth,
+    gender,
+    avatar,
+    roleID,
+    isActive,
+    createdAt,
+    updatedAt,
+    lastLogin
+  } = req.body;
+  console.log("Request body:", req.body);
+  try {
+    const [rows] = await db.execute(
+      `INSERT INTO Users 
+            (UserID, Username, Password, Email, FullName, PhoneNumber, Address, DateOfBirth, Gender, Avatar, RoleID, IsActive, CreatedAt, UpdatedAt, LastLogin)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE 
+                Username = VALUES(Username),
+                Email = VALUES(Email),
+                FullName = VALUES(FullName),
+                PhoneNumber = VALUES(PhoneNumber),
+                UpdatedAt = VALUES(UpdatedAt),
+                LastLogin = VALUES(LastLogin);`,
+      [
+        userID,
+        username,
+        password,
+        email,
+        fullName,
+        phoneNumber,
+        address,
+        dateOfBirth,
+        gender,
+        avatar,
+        roleID,
+        isActive,
+        createdAt,
+        updatedAt,
+        lastLogin
+      ]
+    );
 
-  if (!user) return res.status(401).json({ message: 'Invalid credentials' });
-
-  req.session.user = {
-    userId: user.UserID,
-    username: user.Username,
-    roleId: user.RoleID
-  };
-
-  res.json({ message: 'Login successful', user: req.session.user });
+    res.status(200).json({ message: 'User synced successfully' });
+  } catch (error) {
+    console.error('Error syncing user:', error);
+    res.status(500).json({ error: 'Database error' });
+  }
 });
 
-app.post('/api/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) return res.status(500).json({ message: 'Logout failed' });
-    res.clearCookie('connect.sid');
-    res.json({ message: 'Logout successful' });
-  });
-});
+
+
 
 app.get('/api/check-auth', (req, res) => {
   if (req.session.user) {
@@ -303,21 +340,72 @@ app.get('/api/check-auth', (req, res) => {
 
 
 // API Bookings
-app.get('/api/bookings', async (req, res) => {
+// Endpoint tạo booking mới
+app.post('/api/bookings', async (req, res) => {
   try {
-    const [bookings] = await pool.query(`
-      SELECT b.*, r.RoomName, u.Username 
-      FROM Bookings b
-      JOIN Rooms r ON b.RoomID = r.RoomID
-      JOIN Users u ON b.UserID = u.UserID
-    `);
-    res.json({ success: true, data: bookings });
+    const { room_id, user_id, check_in_date, check_out_date, adults, children } = req.body;
+
+    // 1. Kiểm tra phòng có sẵn
+    const [room] = await pool.query(
+      'SELECT * FROM Rooms WHERE RoomID = ? AND IsAvailable = 1',
+      [room_id]
+    );
+
+    if (!room.length) {
+      return res.status(400).json({
+        success: false,
+        message: 'Room is not available'
+      });
+    }
+
+    // 2. Tính tổng giá
+    const nights = Math.ceil(
+      (new Date(check_out_date) - new Date(check_in_date)) / (1000 * 60 * 60 * 24)
+    );
+    const total_price = room[0].PricePerNight * nights;
+
+    // 3. Tạo booking
+    const [result] = await pool.query(
+      `INSERT INTO Bookings (
+        BookingCode, UserID, RoomID, 
+        CheckInDate, CheckOutDate, 
+        Adults, Children, TotalPrice, Status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        `BOOK-${Date.now()}`,
+        user_id,
+        room_id,
+        check_in_date,
+        check_out_date,
+        adults,
+        children,
+        total_price,
+        'confirmed'
+      ]
+    );
+
+    // 4. Cập nhật trạng thái phòng (tùy chọn)
+    await pool.query(
+      'UPDATE Rooms SET IsAvailable = 0 WHERE RoomID = ?',
+      [room_id]
+    );
+
+    res.json({
+      success: true,
+      booking: {
+        booking_id: result.insertId,
+        room_id,
+        check_in_date,
+        check_out_date,
+        total_price
+      }
+    });
+
   } catch (err) {
-    console.error('Get bookings error:', err);
+    console.error('Booking error:', err);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch bookings',
-      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+      message: 'Failed to create booking'
     });
   }
 });
