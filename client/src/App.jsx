@@ -13,12 +13,16 @@ import Layout from './pages/homestayOwner/Layout'
 import Dashboard from './pages/homestayOwner/Dashboard'
 import AddRoom from './pages/homestayOwner/AddRoom'
 import ListRoom from './pages/homestayOwner/ListRoom'
+import { Toaster } from 'react-hot-toast'
+import { useAppContext } from './context/AppContext'
 const App = () => {
   const isOwnerPath = useLocation().pathname.includes("owner");
+  const {showHomestayReg} = useAppContext();
   return (
     <div>
+      <Toaster />
       {!isOwnerPath && <Navbar />}
-      {false && <HomestayReg />}
+      {showHomestayReg && <HomestayReg />}
       <div className='min-h-[70vh]'>
         <Routes>
           <Route path='/' element={<Home />} />

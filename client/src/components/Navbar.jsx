@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { assets } from "../assets/assets";
 import logo from '../../public/logo.png';
-import { useClerk, useUser, UserButton, useAuth } from '@clerk/clerk-react';
+import { useClerk, UserButton } from '@clerk/clerk-react';
+import { useAppContext } from '../context/AppContext';
 
 const BookIcon = () => (
     <svg className="w-4 h-4 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -22,11 +23,9 @@ const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const { openSignIn } = useClerk();
-    const { user } = useUser();
-    const navigate = useNavigate();
     const location = useLocation();
 
-
+    const { user, navigate, isOwner, setShowHomestayReg } = useAppContext()
 
     useEffect(() => {
         if (location.pathname !== '/') {
@@ -57,9 +56,10 @@ const Navbar = () => {
                         <div className={`${isScrolled ? "bg-gray-700" : "bg-white"} h-0.5 w-0 group-hover:w-full transition-all duration-300`} />
                     </button>
                 ))}
+
                 {user && (
-                    <button className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${isScrolled ? 'text-black' : 'text-white'} transition-all`} onClick={() => navigate('/owner')}>
-                        Dashboard
+                    <button className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${isScrolled ? 'text-black' : 'text-white'} transition-all`} onClick={() => isOwner ? navigate('/owner') : setShowHomestayReg(true)}>
+                        {isOwner ? 'Dashboard' : 'List Your Homestay '}
                     </button>
                 )}
             </div>
@@ -74,11 +74,19 @@ const Navbar = () => {
                         </UserButton.MenuItems>
                     </UserButton>
                 ) : (
-                    <button onClick={() => openSignIn()} className={`px-8 py-2.5 rounded-full ml-4 transition-all duration-500 ${isScrolled ? "text-white bg-black" : "bg-white text-black"}`}>
+                    <button
+                        onClick={() => {
+                            if (!user) {
+                                openSignIn();
+                            }
+                        }}
+                        className={`px-8 py-2.5 rounded-full ml-4 transition-all duration-500 ${isScrolled ? "text-white bg-black" : "bg-white text-black"}`}
+                    >
                         Login
                     </button>
                 )}
             </div>
+
 
             {/* Mobile Menu Button */}
             <div className="flex items-center gap-3 md:hidden">
@@ -105,8 +113,8 @@ const Navbar = () => {
                 ))}
 
                 {user && (
-                    <button className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all" onClick={() => navigate('/owner')}>
-                        Dashboard
+                    <button className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${isScrolled ? 'text-black' : 'text-white'} transition-all`} onClick={() => isOwner ? navigate('/owner') : setShowHomestayReg(true)}>
+                        {isOwner ? 'Dashboard' : 'List Your Homestay '}
                     </button>
                 )}
 

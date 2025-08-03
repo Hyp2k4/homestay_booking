@@ -6,7 +6,7 @@ const Hero = ({
     imageUrl = "/src/assets/heroImage.png",
     title,
     subtitle,
-    height = '90vh',
+    height = '100vh',
     showSearchForm = true,
     children
 }) => {
