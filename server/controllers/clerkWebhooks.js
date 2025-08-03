@@ -14,21 +14,25 @@ const clerkWebhooks = async (req, res) => {
         await whook.verify(JSON.stringify(req.body), headers);
 
         const { data, type } = req.body;
-        const userData = {
-            _id: data.id,
-            email: data.email_addresses[0].email_address,
-            username: data.first_name + " " + data.last_name,
-            image: data.image_url,
-        }
+
         switch (type) {
             case "user.created":
-                // Create a new user
+                const userData = {
+                    _id: data.id,
+                    email: data.email_addresses[0].email_address,
+                    username: data.first_name + " " + data.last_name,
+                    image: data.image_url,
+                }
                 await User.create(userData);
                 console.log("New user created:", newUser);
                 break;
             case "user.updated":
-                // Update existing user
-                await User.findByIdAndUpdate(data.id, userData);
+                const updateData = { // ⬅️ Tương tự với user.updated
+                    email: data.email_addresses[0].email_address,
+                    username: data.username,
+                    image: data.profile_image_url,
+                };
+                await User.findByIdAndUpdate(data.id, updateData)
                 break;
             case "user.deleted":
                 // Delete user
