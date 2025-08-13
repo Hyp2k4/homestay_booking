@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { assets, cities } from '../assets/assets';
+import { useAppContext } from '../context/AppContext';
 
 const Hero = ({
     imageUrl = "/src/assets/heroImage.png",
@@ -11,30 +12,26 @@ const Hero = ({
     children
 }) => {
     const [destination, setDestination] = useState('');
-    const [checkIn, setCheckIn] = useState('');
-    const [checkOut, setCheckOut] = useState('');
-    const [guests, setGuests] = useState(1);
+    const { navigate, getToken, axios, setSearchedCities } = useAppContext();
 
-    const today = new Date().toISOString().split('T')[0];
 
-    const handleSubmit = (e) => {
+    const onSearch = async (e) => {
         e.preventDefault();
+        navigate(`/rooms?destination=${destination}`)
 
-        if (!destination || !checkIn || !checkOut || !guests) {
-            alert("Please fill in all fields.");
-            return;
-        }
+        await axios.post('api/user/store-recent-search', { recentSearchedCity: destination }, { headers: { Authorization: `Bearer ${await getToken()}` } })
 
-        if (checkOut < checkIn) {
-            alert("Check-out date cannot be before check-in date.");
-            return;
-        }
+        setSearchedCities((prevSearchedCities) => {
+            const updatedSearchedCities = [...prevSearchedCities, destination];
+            if (updatedSearchedCities.length > 3) {
+                updatedSearchedCities.shift();
 
-        // Submit logic here...
-        console.log({ destination, checkIn, checkOut, guests });
-    };
+            } return updatedSearchedCities
+        })
+    }
 
     return (
+
         <div
             className="relative w-full"
             style={{
@@ -71,7 +68,7 @@ const Hero = ({
                 {/* Search Form */}
                 {showSearchForm && (
                     <form
-                        onSubmit={handleSubmit}
+                        onSubmit={onSearch}
                         className="bg-white text-gray-500 rounded-lg px-6 py-4 mt-8 flex flex-col md:flex-row max-md:items-start gap-4 max-md:mx-auto w-full max-w-4xl shadow-xl ml-4 md:ml-12"
                     >
                         {/* Destination */}
@@ -107,10 +104,6 @@ const Hero = ({
                                 id="checkIn"
                                 type="date"
                                 className="w-full rounded border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none"
-                                min={today}
-                                value={checkIn}
-                                onChange={(e) => setCheckIn(e.target.value)}
-                                required
                             />
                         </div>
 
@@ -124,14 +117,9 @@ const Hero = ({
                                 id="checkOut"
                                 type="date"
                                 className="w-full rounded border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none"
-                                min={checkIn || today}
-                                value={checkOut}
-                                onChange={(e) => setCheckOut(e.target.value)}
-                                required
                             />
                         </div>
 
-                        {/* Guests */}
                         <div className="flex-1 flex md:flex-col max-md:gap-2 max-md:items-center">
                             <label htmlFor="guests">Guests</label>
                             <input
@@ -141,9 +129,6 @@ const Hero = ({
                                 max={4}
                                 className="rounded border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none max-w-16"
                                 placeholder="0"
-                                value={guests}
-                                onChange={(e) => setGuests(e.target.value)}
-                                required
                             />
                         </div>
 

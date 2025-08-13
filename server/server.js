@@ -2,7 +2,7 @@ import express from 'express';
 import "dotenv/config";
 import cors from 'cors';
 import connectDB from './config/db.js';
-import { clerkMiddleware } from '@clerk/express'
+import { clerkMiddleware } from '@clerk/express';
 import clerkWebhooks from './controllers/clerkWebhooks.js';
 import userRouter from './routes/userRoutes.js';
 import connectCloudinary from './config/cloudinary.js';
@@ -17,7 +17,7 @@ const app = express();
 app.use(cors());
 // Middleware to parse JSON bodies
 app.use(express.json());
-app.use(clerkMiddleware())
+app.use(clerkMiddleware());
 
 app.use('/api/clerk', clerkWebhooks);
 

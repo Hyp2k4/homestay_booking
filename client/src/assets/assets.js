@@ -75,12 +75,42 @@ export const assets = {
 }
 
 export const cities = [
-    "Dubai",
-    "Singapore",
-    "New York",
-    "London",
-    "Hanoi",
+    "Thành phố Hà Nội",
+    "Thành phố Hồ Chí Minh",
+    "Thành phố Huế",
+    "Thành phố Đà Nẵng",
+    "Thành phố Cần Thơ",
+    "Thành phố Hải Phòng",
+    "Tỉnh Lai Châu",
+    "Tỉnh Điện Biên",
+    "Tỉnh Sơn La",
+    "Tỉnh Lạng Sơn",
+    "Tỉnh Cao Bằng",
+    "Tỉnh Tuyên Quang",
+    "Tỉnh Lào Cai",
+    "Tỉnh Thái Nguyên",
+    "Tỉnh Phú Thọ",
+    "Tỉnh Bắc Ninh",
+    "Tỉnh Hưng Yên",
+    "Tỉnh Ninh Bình",
+    "Tỉnh Quảng Ninh",
+    "Tỉnh Thanh Hóa",
+    "Tỉnh Nghệ An",
+    "Tỉnh Hà Tĩnh",
+    "Tỉnh Quảng Trị",
+    "Tỉnh Quảng Ngãi",
+    "Tỉnh Gia Lai",
+    "Tỉnh Khánh Hòa",
+    "Tỉnh Lâm Đồng",
+    "Tỉnh Đắk Lắk",
+    "Tỉnh Đồng Nai",
+    "Tỉnh Tây Ninh",
+    "Tỉnh Vĩnh Long",
+    "Tỉnh Đồng Tháp",
+    "Tỉnh Cà Mau",
+    "Tỉnh An Giang"
 ];
+
 
 // Exclusive Offers Dummy Data
 export const exclusiveOffers = [
@@ -98,11 +128,11 @@ export const testimonials = [
 
 // Facility Icon
 export const facilityIcons = {
-    "Free WiFi": assets.freeWifiIcon,
-    "Free Breakfast": assets.freeBreakfastIcon,
-    "Room Service": assets.roomServiceIcon,
-    "Mountain View": assets.mountainIcon,
-    "Pool Access": assets.poolIcon,
+    "free wifi": assets.freeWifiIcon,
+    "free breakfast": assets.freeBreakfastIcon,
+    "room service": assets.roomServiceIcon,
+    "mountain view": assets.mountainIcon,
+    "pool access": assets.poolIcon,
 };
 
 // For Room Details Page

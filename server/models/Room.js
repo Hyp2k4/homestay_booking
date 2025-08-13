@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const roomSchema = new mongoose.Schema({
     homestay: { type: String, ref: "Homestay", required: true },
     roomType: { type: String, required: true },
+    description: { type: String, required: false },
     pricePerNight: { type: Number, required: true },
     amenities: { type: Array, required: true },
     images: [{ type: String }],

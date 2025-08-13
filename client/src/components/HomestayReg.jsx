@@ -22,7 +22,7 @@ const HomestayReg = () => {
                 setIsOwner(true)
                 setShowHomestayReg(false)
             } else {
-                toast.error('aaaa')
+                toast.error(data.message)
             }
         } catch (error) {
             toast.error(error.message)

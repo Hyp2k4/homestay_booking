@@ -15,6 +15,20 @@ export const AppProvider = ({ children }) => {
     const [isOwner, setIsOwner] = useState(false)
     const [showHomestayReg, setShowHomestayReg] = useState(false)
     const [searchedCities, setSearchedCities] = useState([])
+    const [rooms, setRooms] = useState([])
+
+    const fetchRooms = async () => {
+        try {
+            const { data } = await axios.get('/api/rooms')
+            if (data.success) {
+                setRooms(data.rooms)
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
 
     const fetchUser = async () => {
         try {
@@ -31,7 +45,7 @@ export const AppProvider = ({ children }) => {
             } else {
                 setTimeout(() => {
                     fetchUser()
-                }, 5000)
+                }, 1)
             }
         } catch (error) {
             toast.error(error.message)
@@ -43,9 +57,12 @@ export const AppProvider = ({ children }) => {
             fetchUser();
         }
     }, [user])
+    useEffect(() => {
+        fetchRooms();
+    }, [])
 
     const value = {
-        currency, navigate, user, getToken, isOwner, setIsOwner, axios, showHomestayReg, setShowHomestayReg,searchedCities,setSearchedCities
+        currency, navigate, user, getToken, isOwner, setIsOwner, axios, showHomestayReg, setShowHomestayReg, searchedCities, setSearchedCities, rooms, setRooms
     }
 
     return (

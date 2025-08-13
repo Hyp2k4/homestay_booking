@@ -1,9 +1,39 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Title from '../../components/Title'
-import { assets, dashboardDummyData } from '../../assets/assets'
+import { assets } from '../../assets/assets'
 import formatCurrency from '../../../utils/formatCurrency'
+import { useAppContext } from '../../context/AppContext'
 const Dashboard = () => {
-    const [dashboardData, setDashboardData] = useState(dashboardDummyData);
+
+    const { user, getToken, toast, axios } = useAppContext();
+    const [dashboardData, setDashboardData] = useState({
+        bookings: [],
+        totalBookings: 0,
+        totalRevenue: 0,
+    }
+    );
+    const fetchDashboardData = async () => {
+        try {
+            const { data } = await axios.get('/api/bookings/homestay', {
+                headers: { Authorization: `Bearer ${await getToken()}` }
+            });
+
+            if (data.success) {
+                setDashboardData(data.dashboardData);
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error?.response?.data?.message || error?.message || "Có lỗi xảy ra");
+        }
+    };
+
+
+    useEffect(() => {
+        if (user) {
+            fetchDashboardData()
+        }
+    }, [user])
     return (
         <div>
             <Title align='left' font='outfit' title='Dashboard' subTitle='Monitor your room listings, track bookings and analyze revenue-all in one place. Stay updated with real-time insights to ensure smooth operations.' />
@@ -28,8 +58,8 @@ const Dashboard = () => {
                 <table className='w-full'>
                     <thead className='bg-gray-50'>
                         <tr>
-                            <th className='py-3 px-4 text-gray-800 font-medium'>User Name</th>
-                            <th className='py-3 px-4 text-gray-800 font-medium max-sm:hidden'>Room Name</th>
+                            <th className='py-3 px-4 text-gray-800 font-medium text-center'>User Name</th>
+                            <th className='py-3 px-4 text-gray-800 font-medium text-center'>Room Name</th>
                             <th className='py-3 px-4 text-gray-800 font-medium text-center'>Total Amount</th>
                             <th className='py-3 px-4 text-gray-800 font-medium text-center'>Payment Status</th>
                         </tr>
@@ -37,7 +67,7 @@ const Dashboard = () => {
                     <tbody className='text-sm'>
                         {dashboardData.bookings.map((item, index) => (
                             <tr key={index} className=''>
-                                <td className='py-3 px-4 text-gray-700 border-t border-gray-300'>{item.user.username}</td>
+                                <td className='py-3 px-4 text-gray-700 border-t border-gray-300'>{item.user?.username || 'null'}</td>
                                 <td className='py-3 px-4 text-gray-700 border-t border-gray-300'>{item.room.roomType}</td>
                                 <td className='py-3 px-4 text-gray-700 border-t border-gray-300'>{formatCurrency(item.totalPrice)} VND</td>
                                 <td className='py-3 px-4 border-t border-gray-300 flex'>

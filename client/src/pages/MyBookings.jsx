@@ -1,18 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import Title from '../components/Title';
 import { assets } from '../assets/assets';
-import { userBookingsDummyData } from '../assets/assets';
 import formatCurrency from '../../utils/formatCurrency';
+import { useAppContext } from '../context/AppContext';
+import toast from 'react-hot-toast';
 
 const MyBookings = () => {
-    const [bookings, setBookings] = useState(userBookingsDummyData);
-    const [loading, setLoading] = useState(true);
+    const { axios, getToken, user } = useAppContext()
+    const [bookings, setBookings] = useState([]);
 
+    const fetchUserBookings = async () => {
+        try {
+            const { data } = await axios.get('/api/bookings/user', { headers: { Authorization: `Bearer ${await getToken()}` } })
+            if (data.success) {
+                setBookings(data.bookings)
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+
+        }
+    }
+
+    useEffect(() => {
+        if (user) {
+            fetchUserBookings()
+        }
+    }, [user])
+
+    const calculateTotal = (checkInDate, checkOutDate, pricePerNight) => {
+        const checkIn = new Date(checkInDate);
+        const checkOut = new Date(checkOutDate);
+        const timeDiff = checkOut - checkIn;
+        const numberOfNights = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+        return numberOfNights * pricePerNight;
+    };
 
     return (
         <div className='py-28 md:pd-35 md:pt-32 px-4 md:px-16 lg:px-24 xl:px-32'>
             <Title
-                title="My Bookings"
+                title="My Bookings "
                 subTitle="Easily manage your past, current, and upcoming homestay reservations in one place. Plan your trips seamlessly with just a few clicks"
                 align='left'
             />
@@ -34,17 +62,19 @@ const MyBookings = () => {
                             />
                             <div className='flex flex-col gap-1.5 max-md:mt-3 min-md:ml-4'>
                                 <p className='text-2xl font-playfair'>
-                                    {booking.hotel.name || 'Homestay'} <span className='font-inter text-sm'>({booking.room?.roomType})</span>
+                                    {booking.homestay?.name || 'Homestay'} <span className='font-inter text-sm'>({booking.room?.roomType})</span>
                                 </p>
                                 <div className='flex items-center gap-1 text-sm text-gray-500'>
                                     <img src={assets.locationIcon} alt='location-icon' />
-                                    <span>{booking.hotel?.address || 'Unknown Address'}</span>
+                                    <span>{booking.homestay?.address || 'Unknown Address'}</span>
                                 </div>
                                 <div className='flex items-center gap-1 text-sm text-gray-500'>
                                     <img src={assets.guestsIcon} alt='guests-icon' />
                                     <span>Guest: {booking.guests || 1}</span>
                                 </div>
-                                <p className='text-base'>Totals: {formatCurrency(booking.totalPrice)} VND</p>
+                                <p className='text-base'>
+                                    Totals: {formatCurrency(calculateTotal(booking.checkInDate, booking.checkOutDate, booking.room.pricePerNight))} VND  
+                                </p>
                             </div>
                         </div>
 

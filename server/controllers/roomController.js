@@ -4,8 +4,8 @@ import Homestay from "../models/Hotels.js"
 
 export const createRoom = async (req, res) => {
     try {
-        const { roomType, pricePerNight, amenities } = req.body
-        const homestay = await Homestay.findOne({ owner: req.auth.userId })
+        const { roomType, pricePerNight, amenities, description } = req.body
+        const homestay = await Homestay.findOne({ owner: req.auth().userId })
 
         if (!homestay) return res.json({ success: false, message: "No Homestay found" })
 
@@ -20,10 +20,11 @@ export const createRoom = async (req, res) => {
         await Room.create({
             homestay: homestay._id,
             roomType,
+            description,
             pricePerNight: +pricePerNight,
             amenities: JSON.parse(amenities),
             images,
-        })
+        });
 
         res.json({ success: true, message: "Room created successfully" })
     } catch (error) {
@@ -47,7 +48,7 @@ export const getRooms = async (req, res) => {
 }
 export const getOwnerRooms = async (req, res) => {
     try {
-        const homestayData = await Homestay.findOne({ owner: req.auth.userId })
+        const homestayData = await Homestay.findOne({ owner: req.auth().userId })
         const rooms = await Room.find({ homestay: homestayData._id.toString() }).populate("homestay")
         res.json({ success: true, rooms })
     } catch (error) {
