@@ -1,4 +1,4 @@
-import Homestay from "../models/Hotels.js";
+import Homestay from "../models/Homestays.js";
 import User from '../models/User.js';
 
 

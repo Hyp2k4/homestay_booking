@@ -7,7 +7,7 @@ import { useAppContext } from '../context/AppContext';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useAuth } from "@clerk/clerk-react";
-
+import { useUser } from '@clerk/clerk-react';
 const RoomDetails = () => {
     const { id } = useParams();
     const { rooms, getToken, navigate, axios } = useAppContext();
@@ -17,7 +17,8 @@ const RoomDetails = () => {
     const [checkOutDate, setCheckOutDate] = useState(null);
     const [guests, setGuests] = useState(1);
     const [isAvailable, setIsAvailable] = useState(false);
-    const { isSignedIn } = useAuth();
+    const [showContact, setShowContact] = useState(false);
+    const { isLoaded, isSignedIn, user } = useAuth();
     const checkAvailability = async () => {
         try {
 
@@ -172,11 +173,15 @@ const RoomDetails = () => {
                 </button>
 
             </form>
-            <div className='max-w-2xl border-y border-gray-300 my-15 py-10 text-gray-500'>
-                <p>{room.description || "There are no description for this room!"}</p>
+            <div className='flex flex-row flex-wrap gap-4'>
+                <div className='w-full border-y border-gray-300 my-15 py-10 text-gray-500'>
+                    <h1 className='font-playfair text-2xl'>Description: </h1>
+                    <p>{room.description || "There are no description for this room"}</p>
+                </div>
             </div>
 
-            <div className='mt-25 space-y-4'>
+
+            <div className=' space-y-4 flex flex-row flex-wrap gap-4'>
                 {roomCommonData.map((spec, index) => (
                     <div key={index} className='flex items-start gap-2'>
                         <img src={spec.icon} alt={`${spec.title}-icon`} className='w-6.5' />
@@ -187,16 +192,8 @@ const RoomDetails = () => {
                     </div>
                 ))}
             </div>
-            <div className='max-w-2xl border-y border-gray-300 my-15 py-10 text-gray-500'>
-                <p>Guests will be allocated on the ground floor according to availability.
-                    You get a comfortable Two bedroom apartment has a true city feeling. The
-                    price quoted is for two guests, at the guests slot please mard the number of
-                    guests to get the exact price for groups. The Guests will be allocated
-                    ground floor according to availability. You get the comfortable two bedroom
-                    apartment has a true city feeling.
-                </p>
-            </div>
-            <div className='flex flex-col items-start gap-4'>
+
+            <div className='flex flex-col items-start gap-4 pt-10'>
                 <div className='flex gap-4'>
                     <img src={room.homestay?.owner.image} alt="Host" className='h-14 w-14 md:h-18 md:w-18 rounded-full' />
                     <div>
@@ -207,9 +204,22 @@ const RoomDetails = () => {
                         </div>
                     </div>
                 </div>
-                <button className='px-6 py-2.5 mt-4 rounded text-white bg-primary hover:bg-primary-dull transition-all cursor-pointer'>Contact Now</button>
-            </div>
+                <button
+                    onClick={() => setShowContact(!showContact)}
+                    className='px-6 py-2.5 mt-4 rounded text-white bg-primary hover:bg-primary-dull transition-all cursor-pointer'
+                >
+                    Contact Now
+                </button>
 
+                {showContact && (
+                    <div className='mt-2 text-gray-700 space-y-1'>
+                        <p>
+                            <strong>Phone: (+84)</strong>  <p className='text-blue-600 '>{room.homestay?.contact || "No phone available"}
+                            </p>
+                        </p>
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

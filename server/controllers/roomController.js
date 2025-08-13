@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from "cloudinary"
 import Room from "../models/Room.js"
-import Homestay from "../models/Hotels.js"
+import Homestay from "../models/Homestays.js"
 
 export const createRoom = async (req, res) => {
     try {
