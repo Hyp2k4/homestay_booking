@@ -21,7 +21,7 @@ function UploadMultipleImages() {
     formData.append('room_id', roomId);
 
     try {
-      const res = await fetch('http://localhost:5000/api/upload-multiple', {
+      const res = await fetch('https://homestay-booking-backend.vercel.app/api/upload-multiple', {
         method: 'POST',
         body: formData
       });
@@ -40,7 +40,7 @@ function UploadMultipleImages() {
   const fetchExistingImages = async () => {
     if (!roomId) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/rooms/${roomId}`);
+      const res = await fetch(`https://homestay-booking-backend.vercel.app/api/rooms/${roomId}`);
       const data = await res.json();
 
       if (typeof data.preview_images === 'string') {
@@ -76,7 +76,7 @@ function UploadMultipleImages() {
     formData.append('image', file);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/replace-preview-image`, {
+      const res = await fetch(`https://homestay-booking-backend.vercel.app/api/replace-preview-image`, {
         method: 'POST',
         body: formData
       });

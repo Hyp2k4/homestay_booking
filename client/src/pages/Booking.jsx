@@ -4,7 +4,7 @@ async function createBooking(bookingData) {
   const { getToken } = useAuth();
   const token = await getToken();
 
-  const response = await fetch('http://localhost:5000/api/bookings', {
+  const response = await fetch('https://homestay-booking-backend.vercel.app/api/bookings', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,

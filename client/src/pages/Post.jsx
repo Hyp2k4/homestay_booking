@@ -17,7 +17,7 @@ function UploadImage() {
     formData.append('room_id', roomId);
 
     try {
-      const res = await fetch('http://localhost:5000/api/upload', {
+      const res = await fetch('https://homestay-booking-backend.vercel.app/api/upload', {
         method: 'POST',
         body: formData,
       });

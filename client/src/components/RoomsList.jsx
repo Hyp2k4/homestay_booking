@@ -13,7 +13,7 @@ const RoomsList = () => {
     useEffect(() => {
         const fetchRooms = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/rooms');
+                const response = await axios.get('https://homestay-booking-backend.vercel.app/api/rooms');
                 setRooms(response.data);
             } catch (err) {
                 setError(err.message);
