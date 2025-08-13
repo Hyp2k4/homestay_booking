@@ -10,7 +10,7 @@ import RecommendedHomestays from '../components/RecommendedHomestays';
 const Home = () => {
   return (
     <div>
-      <Hero imageUrl="/src/assets/heroImage.png">
+      <Hero>
         <div className="flex flex-col items-start ml-4">
           <p className="bg-[#49B9FF]/50 px-2 py-1 rounded-full mt-20 w-fit text-sm">
             The Ultimate Hotel Experience

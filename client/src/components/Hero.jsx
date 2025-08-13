@@ -4,7 +4,6 @@ import { assets, cities } from '../assets/assets';
 import { useAppContext } from '../context/AppContext';
 
 const Hero = ({
-    imageUrl = "/src/assets/heroImage.png",
     title,
     subtitle,
     height = '100vh',
@@ -33,13 +32,7 @@ const Hero = ({
     return (
 
         <div
-            className="relative w-full"
-            style={{
-                height: height,
-                backgroundImage: `url(${imageUrl})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
-            }}
+            className='flex flex-col items-start justify-center px-6 md:px-16 lg:px-24 xl:px-24 xl:px-32 text-white bg-[url("/src/assets/heroImage.png")] bg-no-repeat bg-cover bg-center h-screen'
         >
             {/* Overlay */}
             <div className="absolute inset-0 bg-black opacity-30" />
