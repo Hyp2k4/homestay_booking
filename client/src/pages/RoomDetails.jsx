@@ -119,7 +119,7 @@ const RoomDetails = () => {
                             key={index}
                             src={image}
                             alt='Room Image'
-                            className={`w-full rounded-xl shadow-md object-cover cursor-pointer ${mainImage === image && 'outline-3 outline-orange-500'}`} />
+                            className={`w-full rounded-xl h-70 shadow-md object-cover cursor-pointer ${mainImage === image && 'outline-3 outline-orange-500'}`} />
                     ))}
                 </div>
             </div>
